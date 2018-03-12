@@ -9,7 +9,11 @@ To initialize this setup on a new machine do:
 cd
 rm .emacs
 cd .emacs.d
-git clone git@github.com:mffrank/emacs_setup.git
+
+# slight hack to clone files directly into the emacs.d setup folder
+git init
+git remote add origin https://github.com/mffrank/emacs_setup.git
+git pull origin master
 emacs
 ```
 Emacs should then load and build the required packages
