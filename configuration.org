@@ -1,0 +1,59 @@
+#+TITLE: Emacs Configuration
+#+OPTIONS: toc:nil num:nil
+
+* Use sensible-defaults.el
+
+Use [[https://github.com/hrs/sensible-defaults.el][sensible-defaults.el]] for some basic settings.
+
+#+BEGIN_SRC emacs-lisp
+  (load-file "~/.emacs.d/sensible-defaults.el")
+  (sensible-defaults/use-all-settings)
+#+END_SRC
+
+* =evil-mode=
+Use =evil=.
+
+#+BEGIN_SRC emacs-lisp
+  (evil-mode 1)
+#+END_SRC
+
+Enable =surround= everywhere.
+
+#+BEGIN_SRC emacs-lisp
+  (global-evil-surround-mode 1)
+#+END_SRC
+* UI preferences
+** Tweak window chrome
+
+I don't usually use the menu, and they take up useful space.
+
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode 0)
+;;  (menu-bar-mode 0)
+;;  (when window-system
+;;    (scroll-bar-mode -1))
+#+END_SRC
+
+The default frame title isn't useful. This binds it to the name of the current
+project:
+
+#+BEGIN_SRC emacs-lisp
+  (setq frame-title-format '((:eval (projectile-project-name))))
+#+END_SRC
+
+** Use fancy lambdas
+
+Why not?
+
+#+BEGIN_SRC emacs-lisp
+  (global-prettify-symbols-mode t)
+#+END_SRC
+
+** Custom solarized-dark theme
+
+I like the solarized-dark theme. I prefer keeping all the characters in the same
+side and font, though.
+
+#+BEGIN_SRC emacs-lisp
+    (load-theme 'solarized-dark t)
+#+END_SRC
