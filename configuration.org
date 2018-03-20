@@ -1,6 +1,32 @@
 #+TITLE: Emacs Configuration
 #+OPTIONS: toc:nil num:nil
 
+* Configure =use-package=
+Install use-package if necessary
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-enable-at-startup nil)
+(setq package-archives (append package-archives
+                         '(("melpa" . "http://melpa.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ;; ("org" . "http://orgmode.org/elpa/")
+                         ("elpy" . "http://jorgenschaefer.github.io/packages/"))))
+(package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Enable use-package
+(eval-when-compile
+(require 'use-package))
+
+(setq use-package-always-ensure t)
+#+END_SRC
+
 * Use sensible-defaults.el
 
 Use [[https://github.com/hrs/sensible-defaults.el][sensible-defaults.el]] for some basic settings.
@@ -14,15 +40,28 @@ Use [[https://github.com/hrs/sensible-defaults.el][sensible-defaults.el]] for so
 Use =evil=.
 
 #+BEGIN_SRC emacs-lisp
-  (evil-mode 1)
+  (use-package evil
+    :config
+    (evil-mode 1))
 #+END_SRC
 
 Enable =surround= everywhere.
 
 #+BEGIN_SRC emacs-lisp
-  (global-evil-surround-mode 1)
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode 1))
 #+END_SRC
+
 * UI preferences
+** Theme
+#+BEGIN_SRC emacs-lisp
+  (use-package solarized-theme
+    :config
+    (load-theme 'solarized-dark t))
+#+END_SRC
+
+
 ** Tweak window chrome
 
 I don't usually use the menu, and they take up useful space.
@@ -41,85 +80,44 @@ project:
   (setq frame-title-format '((:eval (projectile-project-name))))
 #+END_SRC
 
-** Use fancy lambdas
-
-Why not?
-
+* Personal information
 #+BEGIN_SRC emacs-lisp
-  (global-prettify-symbols-mode t)
+  (setq user-full-name "Max Frank"
+        user-mail-address "max.florian.frank@gmail.com")
 #+END_SRC
 
-** Custom solarized-dark theme
+* Programming customizations
 
-I like the solarized-dark theme. I prefer keeping all the characters in the same
-side and font, though.
-
-#+BEGIN_SRC emacs-lisp
-    (load-theme 'solarized-dark t)
-#+END_SRC
-* Publishing and task management with Org-mode
-** Display preferences
-
-I like seeing a little downward-pointing arrow instead of the usual ellipsis
-(=...=) that org displays when there's stuff under a header.
+I like shallow indentation, but tabs are displayed as 8 characters by default.
+This reduces that.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-ellipsis "⤵")
+  (setq-default tab-width 2)
 #+END_SRC
 
-Use syntax highlighting in source blocks while editing.
+Treating terms in CamelCase symbols as separate words makes editing a little
+easier for me, so I like to use =subword-mode= everywhere.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-src-fontify-natively t)
+  (global-subword-mode 1)
 #+END_SRC
 
-Make TAB act as if it were issued in a buffer of the language's major mode.
+** Magit
+
+I bring up the status menu with =C-x g=.
+
+Use =evil= keybindings with =magit=.
+Per [[http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html][tpope's suggestions]], highlight commit text in the summary line that goes
+beyond 50 characters.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-src-tab-acts-natively t)
-#+END_SRC
-** Exporting
+  (use-package magit
+    :bind ("C-x g" . magit-status)
 
-Allow export to markdown and beamer (for presentations).
-
-#+BEGIN_SRC emacs-lisp
-  (require 'ox-md)
-  (require 'ox-beamer)
-#+END_SRC
-
-**** Exporting to HTML
-
-Don't include a footer with my contact and publishing information at the bottom
-of every exported HTML document.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-html-postamble nil)
-#+END_SRC
-
-Exporting to HTML and opening the results triggers =/usr/bin/sensible-browser=,
-which checks the =$BROWSER= environment variable to choose the right browser.
-I'd like to always use Firefox, so:
-
-#+BEGIN_SRC emacs-lisp
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "firefox")
-
-  (setenv "BROWSER" "firefox")
-#+END_SRC
-
-**** Exporting to PDF
-
-** TeX configuration
-
-Automatically parse the file after loading it.
-
-#+BEGIN_SRC emacs-lisp
-  (setq TeX-parse-self t)
-#+END_SRC
-
-Always use =pdflatex= when compiling LaTeX documents. I don't really have any
-use for DVIs.
-
-#+BEGIN_SRC emacs-lisp
-  (setq TeX-PDF-mode t)
+    :config
+    (use-package evil-magit)
+    ;;(setq magit-push-always-verify nil)
+    (setq git-commit-summary-max-length 50)
+    (add-hook 'git-commit-mode-hook 'turn-on-flyspell)
+    (add-hook 'with-editor-mode-hook 'evil-insert-state))
 #+END_SRC
