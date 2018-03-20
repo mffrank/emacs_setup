@@ -121,3 +121,13 @@ beyond 50 characters.
     (add-hook 'git-commit-mode-hook 'turn-on-flyspell)
     (add-hook 'with-editor-mode-hook 'evil-insert-state))
 #+END_SRC
+
+** R
+I edit R code with the ESS package. It allows to run R code directly in emacs,
+which is very useful since R is interactive.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ess
+    :config
+    (require 'ess-site))
+#+END_SRC
