@@ -46,3 +46,4 @@ flycheck_*.el
 
 # interpreted configuration file
 configuration.el
+/abbrev_defs
